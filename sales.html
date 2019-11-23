@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>React App</title>
+  </head>
+  <body style="margin:0px;padding:0px;">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+  
+<canvas style="margin:0px;padding:0px;">canvas not supported. </canvas>
+<script>
+var k=document.getElementsByTagName("canvas")[0];
+var c=k.getContext('2d');
+k.width=innerWidth-40;
+k.height=innerHeight-40;
+c.fillRect(0,0,k.width,k.height);
+var cities=[];
+var bestEver=[];
+var totalCities=10;
+var minDistance=Infinity;
+function City(){
+this.x=Math.floor(Math.random()*(innerWidth-50))+10;
+this.y=Math.floor(Math.random()*(innerHeight-50))+10;
+this.draw=function(color='white'){
+c.fillStyle=color;
+c.beginPath();
+c.arc(this.x,this.y,10,0,Math.PI*2);
+c.fill();
+c.closePath();
+}
+}
+for(var j=0;j<totalCities;j++){
+cities.push(new City());
+}
+
+console.log(cities);
+
+
+function animate(){
+c.fillStyle="black";
+c.fillRect(0,0,innerWidth,innerHeight);
+var w=Math.floor(Math.random()*totalCities);
+var q=Math.floor(Math.random()*totalCities);
+swap(cities,q,w);
+cities.forEach((city)=>{
+city.draw();
+});
+c.strokeStyle="orange";
+c.lineWidth="1";
+c.beginPath();
+c.moveTo(cities[0].x,cities[0].y);
+
+for(var j=1;j<totalCities;j++){
+c.lineTo(cities[j].x,cities[j].y);
+}
+c.stroke();
+c.closePath();
+var calcdist=distanceSum(cities);
+if(calcdist<minDistance){
+minDistance=calcdist;
+bestEver=cities.slice();
+console.log(minDistance);
+}
+c.strokeStyle="green";
+c.lineWidth="3";
+c.beginPath();
+c.moveTo(bestEver[0].x,bestEver[0].y);
+
+for(var j=1;j<totalCities;j++){
+c.lineTo(bestEver[j].x,bestEver[j].y);
+}
+c.stroke();
+c.closePath();
+}
+
+
+function distance(q,w){
+var h=Math.pow((q.x-w.x),2);
+var v=Math.pow((q.y-w.y),2);
+return Math.sqrt(h+v);
+}
+
+function swap(arr,i,j){
+var temp=arr[i];
+arr[i]=arr[j];
+arr[j]=temp;
+}
+function distanceSum(arr){
+var sum=0;
+for(var j=0;j<arr.length-1;j++){
+sum+=distance(arr[j],arr[j+1]);
+}
+return sum;
+}
+
+var needed=setInterval(animate,100);
+</script>
+  </body>
+</html>
