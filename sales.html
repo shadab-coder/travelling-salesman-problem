@@ -8,14 +8,38 @@
   
 <canvas style="margin:0px;padding:0px;">canvas not supported. </canvas>
 <script>
+
+
 var k=document.getElementsByTagName("canvas")[0];
 var c=k.getContext('2d');
+function stop(e){
+console.log(e);
+clearInterval(needed);
+}
+k.addEventListener('mousedown',stop);
 k.width=innerWidth-40;
 k.height=innerHeight-40;
+
 c.fillRect(0,0,k.width,k.height);
 var cities=[];
 var bestEver=[];
-var totalCities=10;
+var order=[];
+
+var totalCities=6;
+var count=0;
+var totoalCount;
+
+function factorial(q){
+var b=1;
+var c=1;
+for(var j=0;j<q;j++){
+c*=b;
+b++;
+}
+return c;
+}
+totalCount=factorial(totalCities);
+
 var minDistance=Infinity;
 function City(){
 this.x=Math.floor(Math.random()*(innerWidth-50))+10;
@@ -30,6 +54,7 @@ c.closePath();
 }
 for(var j=0;j<totalCities;j++){
 cities.push(new City());
+order.push(j);
 }
 
 console.log(cities);
@@ -38,38 +63,46 @@ console.log(cities);
 function animate(){
 c.fillStyle="black";
 c.fillRect(0,0,innerWidth,innerHeight);
-var w=Math.floor(Math.random()*totalCities);
-var q=Math.floor(Math.random()*totalCities);
-swap(cities,q,w);
+
 cities.forEach((city)=>{
 city.draw();
 });
+
 c.strokeStyle="orange";
 c.lineWidth="1";
 c.beginPath();
-c.moveTo(cities[0].x,cities[0].y);
+c.moveTo(cities[order[0]].x,cities[order[0]].y);
 
 for(var j=1;j<totalCities;j++){
-c.lineTo(cities[j].x,cities[j].y);
+c.lineTo(cities[order[j]].x,cities[order[j]].y);
 }
 c.stroke();
 c.closePath();
-var calcdist=distanceSum(cities);
+
+var calcdist=distanceSum(cities,order);
+
 if(calcdist<minDistance){
 minDistance=calcdist;
-bestEver=cities.slice();
+bestEver=order.slice();
 console.log(minDistance);
 }
+
 c.strokeStyle="green";
 c.lineWidth="3";
 c.beginPath();
-c.moveTo(bestEver[0].x,bestEver[0].y);
+c.moveTo(cities[bestEver[0]].x,cities[bestEver[0]].y);
 
 for(var j=1;j<totalCities;j++){
-c.lineTo(bestEver[j].x,bestEver[j].y);
+c.lineTo(cities[bestEver[j]].x,cities[bestEver[j]].y);
 }
 c.stroke();
 c.closePath();
+count++;
+c.fillStyle="darkorange";
+c.font="31px Arial";
+c.strokeText((count/totalCount*100).toFixed(4).toString()+'%',25,k.height-25);
+c.fillText((count/totalCount*100).toFixed(4).toString()+'%',25,k.height-25);
+order=nextper(order);
 }
 
 
@@ -84,13 +117,35 @@ var temp=arr[i];
 arr[i]=arr[j];
 arr[j]=temp;
 }
-function distanceSum(arr){
+function distanceSum(arr,ord){
 var sum=0;
 for(var j=0;j<arr.length-1;j++){
-sum+=distance(arr[j],arr[j+1]);
+sum+=distance(arr[ord[j]],arr[ord[j+1]]);
 }
 return sum;
 }
+function nextper(arr){
+    var maxX=-1;
+    for(var j=0;j<arr.length-1;j++){
+        if(arr[j]<arr[j+1]){
+            maxX=j
+        }
+    }
+    
+    if(maxX==-1){
+clearInterval(needed);}
+    var maxY=-1;
+    for(var j=0;j<arr.length;j++){
+        if(arr[maxX]<arr[j]){
+            maxY=j
+        }
+    }
+    swap(arr,maxX,maxY);
+    var endarr=arr.splice(maxX+1).reverse();
+    return arr.concat(endarr);
+        
+}
+
 
 var needed=setInterval(animate,100);
 </script>
